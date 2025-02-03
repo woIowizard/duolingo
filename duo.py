@@ -1,3 +1,5 @@
+cookie = ''
+
 import requests,json,time,argparse,base64,random,datetime
 p=argparse.ArgumentParser()
 p.add_argument('-c',help='cookie')
