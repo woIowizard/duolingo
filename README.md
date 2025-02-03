@@ -6,7 +6,7 @@ A script to help with Duolingo. It's main functions:<br>
 * [gems](#dbl): gain gems indefinitely at a rate of around 30 gems per 3 secs
 * [double xp](#dbl): add the double xp boost for 15 mins
 * [health refill](#antibot): refill health
-* [quests](#cycles): make progress on friends, daily, and monthly quests automatically
+* [quests](#cycles): add progress artificially to friends, daily, and monthly quests
 
 <hr>
 
