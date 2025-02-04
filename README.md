@@ -1,12 +1,12 @@
 # duolingo
 
 A script to help with Duolingo. It's main functions:<br>
-* [auto-progression](#progress): clear successive lessons in a course automatically, at a rate of around 4 secs per lesson
-* [xp farming](#xp): gain xp indefinitely at a rate of around 200xp per 4 secs
-* [gems](#dbl): gain gems indefinitely at a rate of around 30 gems per 3 secs
-* [double xp](#dbl): add the double xp boost for 15 mins
+* [auto-progression](#progress): progress through lessons in a course automatically, ~4 secs/lesson
+* [xp farming](#xp): gain xp indefinitely, ~200xp/4 secs
+* [gems](#dbl): gain gems indefinitely, ~30 gems/3 secs
+* [double xp](#dbl): gain 2x xp boost for 15 mins
 * [health refill](#antibot): refill health
-* [quests](#cycles): add progress artificially to friends, daily, and monthly quests
+* [quests](#cycles): add progress to friends, daily, or monthly quests
 
 <hr>
 
