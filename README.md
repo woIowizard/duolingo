@@ -11,7 +11,7 @@ A script to help with Duolingo. It's main functions:<br>
 <hr>
 
 ### Getting started
-You'll need python with the [requests library](https://pypi.org/project/requests/).
+You'll need python with the [requests library](https://pypi.org/project/requests/) and a valid session cookie (stored as `jwt_token`) for the web version of duolingo. Set that as the value of the `cookie` variable in the script, or pass it through the command line as the value of the `-c` parameter. Run the script with `-h` to see the available options:
 
 
 
