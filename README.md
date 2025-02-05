@@ -5,7 +5,7 @@ A script to help with Duolingo. It's main functions:<br>
 * [xp farming](#xp): gain xp indefinitely, ~200xp/4 secs
 * [gems](#gems): gain gems indefinitely, ~30 gems/3 secs
 * [double xp](#dbl): gain 2x xp boost for 15 mins
-* [health refill](#heal): refill health
+* [health refill](#heal)
 * [quests](#quests): add progress to friends, daily, or monthly quests
 
 <hr>
