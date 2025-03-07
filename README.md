@@ -4,7 +4,7 @@ A script to help with Duolingo. It's main functions:<br>
 * [auto-progression](#progress): progress through lessons in a course automatically, ~4 secs/lesson
 * [xp farming](#xp): gain xp indefinitely, ~200xp/4 secs
 * [gems](#gems): gain gems indefinitely, ~30 gems/3 secs
-* [double xp](#dbl): gain 2x xp boost for 15 mins
+* [xp boost](#dbl): gain 3x xp boost for arbitrary amounts of time
 * [health refill](#heal)
 * [quests](#quests): add progress to friends, daily, or monthly quests
 
@@ -60,8 +60,8 @@ https://github.com/user-attachments/assets/e0ce294b-3c24-42cf-a4e8-a80a014347ed
 <hr>
 <a name="dbl"></a> 
 
-### 2x XP boost
-Run the script with `-d` to add a double xp boost to your account for 15 mins.
+### XP boost
+Run the script with `-d` to add an xp boost to your account. If you are logged in to the mobile version of the app, `-d` adds a triple xp boost for 15 mins. You can change the duration of the boost by specifying the desired number of minutes in `-v`. If the triple xp boost fails, `-d` adds a double xp boost to your account for 15 mins.
 
 
 
