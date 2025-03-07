@@ -3,7 +3,7 @@ cookie = ''
 import requests,json,time,argparse,base64,random,datetime
 p=argparse.ArgumentParser()
 p.add_argument('-c',help='cookie')
-p.add_argument('-d',action='store_true',help='2x xp boost')
+p.add_argument('-d',action='store_true',help='3x xp boost')
 p.add_argument('-e',action='store_true',help='health refill')
 p.add_argument('-n',help='number of repetitions. default 1, 0 for inf')
 p.add_argument('-p',action='store_true',help='progress lessons')
@@ -11,7 +11,7 @@ p.add_argument('-l',action='store_true',help='legendary lessons')
 p.add_argument('-P',action='store_true',help='patient mode')
 p.add_argument('-g',help='claim rewards chest. \'list\' to see options')
 p.add_argument('-k',help='update stats key. \'list\' to see options')
-p.add_argument('-v',help='increase stat value')
+p.add_argument('-v',help='value to increase stat or duration (mins) of xp boost, default 15 mins')
 args = p.parse_args()
 
 if args.c: cookie=args.c
@@ -23,9 +23,9 @@ except: print('[-] number of reps must be a non-negative integer');quit()
     
 h={"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:133.0) Gecko/20100101 Firefox/133.0", "Accept": "application/json; charset=UTF-8", "Accept-Language": "en-US,en;q=0.5", "Content-Type": "application/json; charset=UTF-8", "Referer": "https://www.duolingo.com/", "X-Amzn-Trace-Id": "User=%s"%uid, "X-Requested-With": "XMLHttpRequest", "Origin": "https://www.duolingo.com", "Sec-Fetch-Dest": "empty", "Sec-Fetch-Mode": "cors", "Sec-Fetch-Site": "same-site", "Priority": "u=4", "Te": "trailers"}
 
-j = json.loads(requests.get('https://www.duolingo.com/2017-06-30/users/%s?fields=rewardBundles,trackingProperties,currentCourse'%uid,cookies={'jwt_token':cookie},headers=h).text)
-L = j['trackingProperties']['learning_language']
-
+if not args.k or 'l' not in args.k:
+    j = json.loads(requests.get('https://www.duolingo.com/2017-06-30/users/%s?fields=rewardBundles,trackingProperties,currentCourse'%uid,cookies={'jwt_token':cookie},headers=h).text)
+    L = j['trackingProperties']['learning_language']
 if args.k:
     m = ['QUESTS','LESSONS', 'FIVE_CORRECT_IN_A_ROW', 'TEN_CORRECT_IN_A_ROW', 'EIGHTY_ACCURACY_LESSONS', 'NINETY_ACCURACY_LESSONS', 'PERFECT_LESSONS', 'XP', 'COMBO_XP', 'SPEAK_CHALLENGES', 'LISTEN_CHALLENGES', 'SECONDS_SPENT_LEARNING','EXTEND_STREAK','DEEPEST_PATH_NODE_SESSIONS','MATH_SESSIONS','MUSIC_SESSIONS','STORIES']
     try: k = m[int(args.k)]
@@ -37,13 +37,22 @@ if args.k:
     r = requests.post('https://goals-api.duolingo.com/users/%s/progress/batch'%uid,cookies={'jwt_token':cookie},headers=h,json={"metric_updates": [{"metric":k, "quantity":v}], "timestamp":t.strftime("%Y-%m-%dT%H:%M:%S.")+str(t.microsecond)[:3]+"Z", "timezone": "Asia/Srednekolymsk"})
     try: assert json.loads(r.text)['message']=='SUCCESS'; print('[+] update success')
     except: print('[-] update failed with status code %s'%(r.status_code));print('[DEBUG] %s'%r.text)
-elif args.d or args.e:
-    print('[=] attempting to get %s'%('health refill' if args.e else 'xp boost'))
-    r = requests.post('https://www.duolingo.com/2017-06-30/users/%s/shop-items'%uid,cookies={'jwt_token':cookie},headers=h,json={"isFree": True, "itemName": "health_refill" if args.e else 'xp_boost_15', "learningLanguage":L})
-    try: 
-        if args.e: assert json.loads(r.text)['itemName']=='health_refill';print('[+] health refilled')
-        else: print('[+] success. xp boost until %s'%datetime.datetime.fromtimestamp(json.loads(r.text)['expectedExpirationDate']).strftime('%Y-%m-%d %H:%M:%S'))
-    except: print('[-] update failed with status code %s'%(r.status_code));print('[DEBUG] %s'%r.text)
+elif args.e:
+    print('[=] attempting to get health refill')
+    r = requests.post('https://www.duolingo.com/2017-06-30/users/%s/shop-items'%uid,cookies={'jwt_token':cookie},headers=h,json={"isFree": True, "itemName": "health_refill", "learningLanguage":L})
+    try: assert json.loads(r.text)['itemName']=='health_refill';print('[+] health refilled')
+    except: print('[-] failed with status code %s'%(r.status_code));print('[DEBUG] %s'%r.text)
+elif args.d:
+    try: d = int(args.v); assert d>0
+    except: d = 15
+    print('[=] attempting to get xp boost for %s minutes'%d)
+    r = requests.post('https://ios-api-cf.duolingo.com/2023-05-23/users/1233232391/shop-items',headers={"Accept": "*/*", "Content-Type": "application/json", "X-Amzn-Trace-Id": "User=%s"%uid, "Accept-Encoding": "gzip, deflate, br", "User-Agent": "DuolingoMobile/7.61.0 (iPhone; iOS 18.3.1; Scale/2.00)", "Accept-Language": "en-US,en;q=0.5"}, cookies={'jwt_token':cookie},json={"id":"xp_boost_stackable","isFree":True,"subscriptionFeatureGroupId":0,"xpBoostMinutes":d,"xpBoostMultiplier":3, "xpBoostSource":"DAILY_QUEST_HARD_COMEBACK"})
+    try: j=json.loads(r.text); print('[+] success. %sx xp boost until %s'%(j['xpBoostMultiplier'],datetime.datetime.fromtimestamp(j['expectedExpirationDate']).strftime('%Y-%m-%d %H:%M:%S')))
+    except: 
+        print('[-] failed with status code %s and body %s\n[=] trying 15 mins double xp boost'%(r.status_code,r.text))
+        r = requests.post('https://www.duolingo.com/2017-06-30/users/%s/shop-items'%uid,cookies={'jwt_token':cookie},headers=h,json={"isFree": True, "itemName":'xp_boost_15', "learningLanguage":L})
+        try: print('[+] success. 2x xp boost until %s'%datetime.datetime.fromtimestamp(json.loads(r.text)['expectedExpirationDate']).strftime('%Y-%m-%d %H:%M:%S'))
+        except: print('[-] failed with status code %s'%(r.status_code));print('[DEBUG] %s'%r.text)
 elif args.g:
     tt=ta=i=0
     if args.g == 'skill': tt,ta='SKILL_COMPLETION_BALANCED',30
